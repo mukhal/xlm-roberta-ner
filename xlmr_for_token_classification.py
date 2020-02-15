@@ -15,7 +15,7 @@ class XLMRForTokenClassification(nn.Module):
     def forward(self, inputs_ids, labels, labels_mask, bpe_valid_ids):
         '''
         Args:
-            inputs_ids: tensor of size (bsz, max_seq_len)
+            inputs_ids: tensor of size (bsz, max_seq_len). padding idx = 1
             labels: tensor of size (bsz, max_seq_len)
             labels_mask
         Computes a forward pass through the sequence tagging model.
@@ -28,10 +28,35 @@ class XLMRForTokenClassification(nn.Module):
         transformer_out, _ = self.xlmr.forward(inputs_ids, features_only=True)
         bsz, max_seq_len, hidden_size = transformer_out.size()
 
-        masked_transformer_out = torch.zeros(bsz, max_seq_len, hidden_size)
+
 
         
-        logits = self.classification_head(transformer_out)  # (batch, max_seq_len, n_labels)
+        valid_output = torch.zeros(bsz, max_seq_len, hidden_size, dtype=torch.float32,device='cuda')
+        
+        for i in range(bsz):
+            jj = -1
+            for j in range(max_seq_len):
+                    if bpe_valid_ids[i][j].item() == 1:
+                        jj += 1
+                        valid_output[i][jj] = transformer_out[i][j]
+
+        sequence_output = self.dropout(valid_output)
+        logits = self.classification_head(sequence_output)
+
+        if labels is not None:
+            loss_fct = nn.CrossEntropyLoss(ignore_index=0)
+            # Only keep active parts of the loss
+            #attention_mask_label = None
+            if labels_mask is not None:
+                active_loss = labels_mask.view(-1) == 1
+                active_logits = logits.view(-1, self.num_labels)[active_loss]
+                active_labels = labels.view(-1)[active_loss]
+                loss = loss_fct(active_logits, active_labels)
+            else:
+                loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
+            return loss
+        else:
+            return logits
 
 
 
