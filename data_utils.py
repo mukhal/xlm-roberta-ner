@@ -2,13 +2,6 @@ import os
 import logging
 
 
-
-logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
-                    datefmt = '%m/%d/%Y %H:%M:%S',
-                    level = logging.DEBUG)
-
-logger = logging.getLogger(__name__)
-
 class InputExample(object):
     """A single training/test example for simple sequence classification."""
 
@@ -60,7 +53,7 @@ class NerProcessor:
             self._read_file(os.path.join(data_dir, "test.txt")), "test")
 
     def get_labels(self):
-        return ["IGNORE", "O", "B-PERS", "I-PERS", "B-ORG", "I-ORG", "B-LOC", "I-LOC"]
+        return ["O", "B-PERS", "I-PERS", "B-ORG", "I-ORG", "B-LOC", "I-LOC"]
 
     def _read_file(self, filename):
         '''
@@ -108,14 +101,12 @@ def convert_examples_to_features(examples, label_list, max_seq_length, encode_me
     * Labels are only assigned to the positions correspoinding to the first BPE token of each word.
     * Other positions are labeled with 0 ("IGNORE")
 
-
     """
-
-    label_map = {label: i for i, label in enumerate(label_list)} # 0 label is to be ignored
-    logger.debug("label_map = ")
-    label_map
+    ignored_label = "IGNORE"
+    label_map = {label: i for i, label in enumerate(label_list, 1)}
+    label_map[ignored_label] = 0  # 0 label is to be ignored
+    
     features = []
-
     for (ex_index, example) in enumerate(examples):
 
         textlist = example.text_a.split(' ')
@@ -126,46 +117,38 @@ def convert_examples_to_features(examples, label_list, max_seq_length, encode_me
         token_ids = []
 
         for i, word in enumerate(textlist):
-
-            tokens = encode_method(word.strip()) # word token ids
-            token_ids.extend(tokens) # all sentence token ids
-
+            tokens = encode_method(word.strip())  # word token ids
+            token_ids.extend(tokens)  # all sentence token ids
             label_1 = labellist[i]
-            
-
             for m in range(len(tokens)):
-
                 if m == 0:  # only label the first BPE token of each work
                     labels.append(label_1)
                     valid.append(1)
                     label_mask.append(1)
                 else:
-                    labels.append("IGNORE") # unlabeled BPE token
+                    labels.append(ignored_label)  # unlabeled BPE token
                     label_mask.append(0)
                     valid.append(0)
-        
-        logger.info("token ids = ")
-        logger.info(token_ids)
-        logger.info("labels = ")
-        logger.info(labels)
-        logger.info("valid = ")
-        logger.info(valid)
+
+        logging.debug("token ids = ")
+        logging.debug(token_ids)
+        logging.debug("labels = ")
+        logging.debug(labels)
+        logging.debug("valid = ")
+        logging.debug(valid)
 
         assert len(valid) == len(labels)
 
-        if len(token_ids) >= max_seq_length - 1: # trim extra tokens
+        if len(token_ids) >= max_seq_length - 1:  # trim extra tokens
             token_ids = token_ids[0:(max_seq_length)]
             labels = labels[0:(max_seq_length)]
             valid = valid[0:(max_seq_length)]
             label_mask = label_mask[0:(max_seq_length)]
 
-
         label_ids = []
-
         for i, _ in enumerate(token_ids):
             label_ids.append(label_map[labels[i]])
-        
-       
+
         assert len(token_ids) == len(label_ids)
         assert len(valid) == len(label_ids)
 
@@ -173,16 +156,16 @@ def convert_examples_to_features(examples, label_list, max_seq_length, encode_me
         label_mask = [1] * len(label_ids)
 
         while len(token_ids) < max_seq_length:
-            token_ids.append(1) # padding idx
+            token_ids.append(1)  # token padding idx
             input_mask.append(0)
-            label_ids.append(0) # label padding idx
+            label_ids.append(label_map[ignored_label])  # label ignore idx
             valid.append(1)
             label_mask.append(0)
 
         while len(label_ids) < max_seq_length:
             label_ids.append(0)
             label_mask.append(0)
-        
+
         assert len(token_ids) == max_seq_length
         assert len(input_mask) == max_seq_length
         assert len(label_ids) == max_seq_length
@@ -190,15 +173,15 @@ def convert_examples_to_features(examples, label_list, max_seq_length, encode_me
         assert len(label_mask) == max_seq_length
 
         if ex_index < 5:
-            logger.info("*** Example ***")
-            logger.info("guid: %s" % (example.guid))
-            logger.info("tokens: %s" % " ".join(
+            logging.info("*** Example ***")
+            logging.info("guid: %s" % (example.guid))
+            logging.info("tokens: %s" % " ".join(
                 [str(x) for x in tokens]))
-            logger.info("input_ids: %s" %
-                        " ".join([str(x) for x in token_ids]))
-            logger.info("input_mask: %s" %
-                        " ".join([str(x) for x in input_mask]))
-            # logger.info("label: %s (id = %d)" % (example.label, label_ids))
+            logging.info("input_ids: %s" %
+                         " ".join([str(x) for x in token_ids]))
+            logging.info("input_mask: %s" %
+                         " ".join([str(x) for x in input_mask]))
+            # logging.info("label: %s (id = %d)" % (example.label, label_ids))
 
         features.append(
             InputFeatures(input_ids=token_ids,
