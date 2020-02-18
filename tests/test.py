@@ -4,10 +4,9 @@ sys.path.append('..')
 from xlmr_for_token_classification import XLMRForTokenClassification
 from collections import namedtuple
 import unittest, logging 
-
 from data_utils import *
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG) # for debugging purposes
 
 class TestTextEncoding(unittest.TestCase):
 
@@ -30,5 +29,4 @@ class TestTextEncoding(unittest.TestCase):
         return lambda s:[100] * len(s)
 
 if __name__ =='__main__':
-
     unittest.main()
