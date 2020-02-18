@@ -28,9 +28,6 @@ class XLMRForTokenClassification(nn.Module):
         transformer_out, _ = self.xlmr.forward(inputs_ids, features_only=True)
         bsz, max_seq_len, hidden_size = transformer_out.size()
 
-
-
-        
         valid_output = torch.zeros(bsz, max_seq_len, hidden_size, dtype=torch.float32,device='cuda')
         
         for i in range(bsz):
@@ -58,5 +55,16 @@ class XLMRForTokenClassification(nn.Module):
         else:
             return logits
 
+
+    def encode_string(self, s):
+        """
+        takes a string and returns a list of token ids
+        """
+
+
+        tensor_ids =  self.xlmr.task.source_dictionary.encode_line(s, append_eos=False,
+         add_if_not_exist=False)
+
+        return tensor_ids.cpu().numpy().tolist()
 
 
