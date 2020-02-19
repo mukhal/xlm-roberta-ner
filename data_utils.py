@@ -1,6 +1,8 @@
 import os
 import logging
 
+import torch 
+from torch.utils.data import TensorDataset
 
 class InputExample(object):
     """A single training/test example for simple sequence classification."""
@@ -115,9 +117,9 @@ def convert_examples_to_features(examples, label_list, max_seq_length, encode_me
         valid = []
         label_mask = []
         token_ids = []
-
-        for i, word in enumerate(textlist):
-            tokens = encode_method(word.strip())  # word token ids
+       
+        for i, word in enumerate(textlist):  
+            tokens = encode_method(word.strip())  # word token ids   
             token_ids.extend(tokens)  # all sentence token ids
             label_1 = labellist[i]
             for m in range(len(tokens)):
@@ -137,13 +139,26 @@ def convert_examples_to_features(examples, label_list, max_seq_length, encode_me
         logging.debug("valid = ")
         logging.debug(valid)
 
-        assert len(valid) == len(labels)
-
         if len(token_ids) >= max_seq_length - 1:  # trim extra tokens
-            token_ids = token_ids[0:(max_seq_length)]
-            labels = labels[0:(max_seq_length)]
-            valid = valid[0:(max_seq_length)]
-            label_mask = label_mask[0:(max_seq_length)]
+            token_ids = token_ids[0:(max_seq_length-2)]
+            labels = labels[0:(max_seq_length-2)]
+            valid = valid[0:(max_seq_length-2)]
+            label_mask = label_mask[0:(max_seq_length-2)]
+
+        # adding <s>
+        token_ids.insert(0, 0)
+        labels.insert(0, ignored_label)
+        label_mask.insert(0, 0)
+        valid.insert(0, 0)
+
+        # adding </s>
+        token_ids.append(2)
+        labels.append(ignored_label)
+        label_mask.append(0)
+        valid.append(0)
+
+        assert len(token_ids) == len(labels)
+        assert len(valid) == len(labels)
 
         label_ids = []
         for i, _ in enumerate(token_ids):
@@ -153,17 +168,16 @@ def convert_examples_to_features(examples, label_list, max_seq_length, encode_me
         assert len(valid) == len(label_ids)
 
         input_mask = [1] * len(token_ids)
-        label_mask = [1] * len(label_ids)
 
         while len(token_ids) < max_seq_length:
             token_ids.append(1)  # token padding idx
             input_mask.append(0)
             label_ids.append(label_map[ignored_label])  # label ignore idx
-            valid.append(1)
+            valid.append(0)
             label_mask.append(0)
 
         while len(label_ids) < max_seq_length:
-            label_ids.append(0)
+            label_ids.append(label_map[ignored_label])
             label_mask.append(0)
 
         assert len(token_ids) == max_seq_length
@@ -181,7 +195,11 @@ def convert_examples_to_features(examples, label_list, max_seq_length, encode_me
                          " ".join([str(x) for x in token_ids]))
             logging.info("input_mask: %s" %
                          " ".join([str(x) for x in input_mask]))
-            # logging.info("label: %s (id = %d)" % (example.label, label_ids))
+            logging.info("label: %s (id = %s)" % (example.label, " ".join(map(str, label_ids))))
+            logging.info("label_mask: %s" %
+                         " ".join([str(x) for x in label_mask]))
+            logging.info("valid mask: %s" %
+                        " ".join([str(x) for x in valid]))
 
         features.append(
             InputFeatures(input_ids=token_ids,
@@ -191,3 +209,18 @@ def convert_examples_to_features(examples, label_list, max_seq_length, encode_me
                           label_mask=label_mask))
 
     return features
+
+
+def create_dataset(features):
+    
+    all_input_ids = torch.tensor(
+        [f.input_ids for f in features], dtype=torch.long)
+    all_label_ids = torch.tensor(
+        [f.label_id for f in features], dtype=torch.long)
+    all_valid_ids = torch.tensor(
+        [f.valid_ids for f in features], dtype=torch.long)
+    all_lmask_ids = torch.tensor(
+        [f.label_mask for f in features], dtype=torch.long)
+
+    return TensorDataset(
+        all_input_ids, all_label_ids, all_lmask_ids, all_valid_ids)
