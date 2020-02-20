@@ -143,7 +143,7 @@ def evaluate_model(model, eval_dataset, label_list, batch_size, device):
                logits = model(input_ids, labels=None, labels_mask=None,
                               valid_mask=valid_ids)
 
-          logits = torch.argmax(F.log_softmax(logits, dim=2), dim=2)
+          logits = torch.argmax(logits, dim=2)
           logits = logits.detach().cpu().numpy()
           label_ids = label_ids.cpu().numpy()
 
@@ -159,7 +159,8 @@ def evaluate_model(model, eval_dataset, label_list, batch_size, device):
                assert len(temp_1) == len(temp_2)
                y_true.append(temp_1)
                y_pred.append(temp_2)
-          
+     print(y_pred) 
+     print(y_true)
      report = classification_report(y_true, y_pred, digits=4)
      f1= f1_score(y_true, y_pred, average='Macro')
 

@@ -80,9 +80,6 @@ def main():
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model.to(device)
 
-    for n, p in model.named_parameters():
-        if p.requires_grad:
-            print(n)
     no_decay = ['bias', 'final_layer_norm.weight']
     
     params = list(model.named_parameters())
@@ -96,7 +93,7 @@ def main():
 
 
     warmup_steps = int(args.warmup_proportion * num_train_optimization_steps)
-    optimizer = AdamW(model.parameters(),
+    optimizer = AdamW(optimizer_grouped_parameters,
                       lr=args.learning_rate, eps=args.adam_epsilon)
     #scheduler = WarmupLinearSchedule(
     #    optimizer, warmup_steps=warmup_steps, t_total=num_train_optimization_steps)
@@ -133,7 +130,15 @@ def main():
         train_dataloader = DataLoader(
             train_data, sampler=train_sampler, batch_size=args.train_batch_size)
 
-        model.train()
+        # getting validation samples
+        val_examples = processor.get_dev_examples(args.data_dir)
+        val_features = convert_examples_to_features(
+            val_examples, label_list, args.max_seq_length, model.encode_word)
+
+        val_data = create_dataset(val_features)
+        
+        best_val_f1 = 0.0
+        model.train()   
 
         for _ in trange(int(args.num_train_epochs), desc="Epoch"):
             tr_loss = 0
@@ -149,7 +154,6 @@ def main():
                 if args.gradient_accumulation_steps > 1:
                     loss = loss / args.gradient_accumulation_steps
                 
-                tbar.set_description('Loss = %.4f' %(loss.item() / (step+1)))
                 if args.fp16:
                     with amp.scale_loss(loss, optimizer) as scaled_loss:
                         scaled_loss.backward()
@@ -163,28 +167,26 @@ def main():
                 tr_loss += loss.item()
                 nb_tr_examples += input_ids.size(0)
                 nb_tr_steps += 1
+                tbar.set_description('Loss = %.4f' %(tr_loss / (step+1)))
 
                 if (step + 1) % args.gradient_accumulation_steps == 0:
                     optimizer.step()
                     #scheduler.step()  # Update learning rate schedule
                     model.zero_grad()
                     global_step += 1
-
-        # Save a trained model and the associated configuration
-        torch.save(model.state_dict(), open(os.path.join(args.output_dir, 'model.pt'), 'wb'))
-
-    else:
-
+            '''
+            f1, report = evaluate_model(model, val_data, label_list, args.eval_batch_size, device)
+            if f1 > best_val_f1:
+                best_val_f1 = f1
+                logging.info("Found better f1=%.4f on validation set. Saving model\n" %(f1))
+                logging.info("%s\n" %(report))
+                
+                torch.save(model.state_dict(), open(os.path.join(args.output_dir, 'model.pt'), 'wb'))
+            '''
+    else: # load a saved model
         state_dict = torch.load(open(os.path.join(args.output_dir, 'model.pt'), 'rb'))
         model.load_state_dict(state_dict)
-
         logging.info("Loaded saved model")
-
-        # TODO: Load XLMR model
-        pass
-        #model = Ner.from_pretrained(args.output_dir)
-        # tokenizer = BertTokenizer.from_pretrained(
-        #    args.output_dir, do_lower_case=args.do_lower_case)
 
     model.to(device)
 
