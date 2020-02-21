@@ -77,7 +77,7 @@ def main():
 
     model = XLMRForTokenClassification(pretrained_path=args.pretrained_path,
                                        n_labels=num_labels, hidden_size=hidden_size,
-                                       dropout=args.dropout)
+                                       dropout_p=args.dropout)
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model.to(device)
@@ -92,7 +92,6 @@ def main():
         {'params': [p for n, p in params if any(
             nd in n for nd in no_decay)], 'weight_decay': 0.0}
     ]
-
 
     warmup_steps = int(args.warmup_proportion * num_train_optimization_steps)
     optimizer = AdamW(optimizer_grouped_parameters,

@@ -18,13 +18,11 @@ class XLMRForTokenClassification(nn.Module):
         self.dropout = nn.Dropout(dropout_p)
 
         # initializing classification head
-        self.classification_head.data.normal_(mean=0.0, std=head_init_range)
+        self.classification_head.weight.data.normal_(mean=0.0, std=head_init_range)
 
     def forward(self, inputs_ids, labels, labels_mask, valid_mask):
         '''
-
         Computes a forward pass through the sequence tagging model.
-
         Args:
             inputs_ids: tensor of size (bsz, max_seq_len). padding idx = 1
             labels: tensor of size (bsz, max_seq_len)
