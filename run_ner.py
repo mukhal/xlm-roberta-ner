@@ -19,7 +19,8 @@ from torch import nn
 from torch.utils.data import (DataLoader, RandomSampler, SequentialSampler,
                               TensorDataset)
 from torch.utils.data.distributed import DistributedSampler
-from tqdm import tqdm, trange
+from tqdm import tqdm_notebook as tqdm
+from tqdm import trange
 
 from seqeval.metrics import classification_report
 from xlmr_for_token_classification import XLMRForTokenClassification
