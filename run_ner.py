@@ -60,8 +60,6 @@ def main():
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)
 
-    task_name = args.task_name.lower()
-
     processor = NerProcessor()
     label_list = processor.get_labels()
     num_labels = len(label_list) + 1  # add one for IGNORE label
@@ -75,8 +73,11 @@ def main():
             len(train_examples) / args.train_batch_size / args.gradient_accumulation_steps) * args.num_train_epochs
     # Prepare model
 
+    hidden_size = 768 if 'base' in args.pretrained_path else 1024 # TODO: make this inside model.__init__
+
     model = XLMRForTokenClassification(pretrained_path=args.pretrained_path,
-                                       n_labels=num_labels)
+                                       n_labels=num_labels, hidden_size=hidden_size,
+                                       dropout=args.dropout)
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model.to(device)
