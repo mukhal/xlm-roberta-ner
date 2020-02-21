@@ -123,11 +123,8 @@ def main():
 
         train_data = create_dataset(train_features)
 
-        if args.local_rank == -1:
-            train_sampler = RandomSampler(train_data)
-        else:
-            train_sampler = DistributedSampler(train_data)
-
+        train_sampler = RandomSampler(train_data)
+    
         train_dataloader = DataLoader(
             train_data, sampler=train_sampler, batch_size=args.train_batch_size)
 
@@ -191,7 +188,7 @@ def main():
 
     model.to(device)
 
-    if args.do_eval and (args.local_rank == -1 or torch.distributed.get_rank() == 0):
+    if args.do_eval:
         if args.eval_on == "dev":
             eval_examples = processor.get_dev_examples(args.data_dir)
         elif args.eval_on == "test":
