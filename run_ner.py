@@ -96,8 +96,8 @@ def main():
     warmup_steps = int(args.warmup_proportion * num_train_optimization_steps)
     optimizer = AdamW(optimizer_grouped_parameters,
                       lr=args.learning_rate, eps=args.adam_epsilon)
-    #scheduler = WarmupLinearSchedule(
-    #    optimizer, warmup_steps=warmup_steps, t_total=num_train_optimization_steps)
+    scheduler = WarmupLinearSchedule(
+        optimizer, warmup_steps=warmup_steps, t_total=num_train_optimization_steps)
 
     if args.fp16:
         try:

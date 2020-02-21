@@ -186,7 +186,7 @@ def convert_examples_to_features(examples, label_list, max_seq_length, encode_me
         assert len(valid) == max_seq_length
         assert len(label_mask) == max_seq_length
 
-        if ex_index < 5:
+        if ex_index < 2:
             logging.info("*** Example ***")
             logging.info("guid: %s" % (example.guid))
             logging.info("tokens: %s" % " ".join(
