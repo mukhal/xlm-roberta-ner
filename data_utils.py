@@ -75,8 +75,8 @@ class NerProcessor:
                 continue
 
             splits = line.split()
-            assert len(splits) == 2, "error on line {}. Found {} splits".format(i, len(splits))
-            word, tag = splits[0], splits[1]
+            assert len(splits) >= 2, "error on line {}. Found {} splits".format(i, len(splits))
+            word, tag = splits[0], splits[-1]
             assert tag in ["O", "B-PERS", "I-PERS", "B-ORG", "I-ORG", "B-LOC", "I-LOC"], "tag error in line {}".format(i)
             sentence.append(word.strip())
             label.append(tag.strip())
