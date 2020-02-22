@@ -1,7 +1,7 @@
 from fairseq.models.roberta import XLMRModel
 import torch
 import torch.nn as nn
-
+import torch.nn.functional as F
 
 class XLMRForTokenClassification(nn.Module):
 
@@ -10,7 +10,10 @@ class XLMRForTokenClassification(nn.Module):
         super().__init__()
 
         self.n_labels = n_labels
+        
+        self.linear_1 = nn.Linear(hidden_size, hidden_size)
         self.classification_head = nn.Linear(hidden_size, n_labels)
+        
         self.label_ignore_idx = label_ignore_idx
 
         self.xlmr = XLMRModel.from_pretrained(pretrained_path)
@@ -47,8 +50,10 @@ class XLMRForTokenClassification(nn.Module):
                 if valid_mask[i][j]:
                     valid_output[i][j] = transformer_out[i][j]
 
-        valid_output = self.dropout(transformer_out)
-        logits = self.classification_head(valid_output)
+        valid_output = self.dropout(valid_output)
+
+        logits = F.relu(self.linear_1(valid_output))
+        logits = self.classification_head(logits)
 
         if labels is not None:
             loss_fct = nn.CrossEntropyLoss(ignore_index=self.label_ignore_idx)
