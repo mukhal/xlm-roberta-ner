@@ -13,7 +13,7 @@ The code is inspired from the original BERT repo and the [BERT-NER](https://gith
 
 ## Setting up
 
-```
+```bash
 # clone the repo
 git clone https://github.com/mohammadKhalifa/XLMR-NER.git
 
