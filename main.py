@@ -11,20 +11,18 @@ import sys
 import numpy as np
 import torch
 import torch.nn.functional as F
-from pytorch_transformers import (WEIGHTS_NAME, AdamW, BertConfig,
-                                  BertForTokenClassification, BertTokenizer,
-                                  WarmupLinearSchedule)
+from pytorch_transformers import AdamW, WarmupLinearSchedule
 from torch import nn
 from torch.utils.data import (DataLoader, RandomSampler, SequentialSampler,
                               TensorDataset)
-from torch.utils.data.distributed import DistributedSampler
-from tqdm import tqdm_notebook as tqdm
-from tqdm import trange
 
 from seqeval.metrics import classification_report
 from model.xlmr_for_token_classification import XLMRForTokenClassification
-from utils import add_xlmr_args, evaluate_model
-from data_utils import NerProcessor, create_dataset, convert_examples_to_features
+from utils.train_utils import add_xlmr_args, evaluate_model
+from utils.data_utils import NerProcessor, create_dataset, convert_examples_to_features
+
+from tqdm import tqdm as tqdm
+from tqdm import trange
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -71,10 +69,12 @@ def main():
         num_train_optimization_steps = int(
             len(train_examples) / args.train_batch_size / args.gradient_accumulation_steps) * args.num_train_epochs
     
-    # Prepare model
+    # preparing model configs
     hidden_size = 768 if 'base' in args.pretrained_path else 1024 # TODO: move this inside model.__init__
 
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    device = 'cuda' if (torch.cuda.is_available() and not args.no_cuda) else 'cpu'
+
+    # creating model
     model = XLMRForTokenClassification(pretrained_path=args.pretrained_path,
                                        n_labels=num_labels, hidden_size=hidden_size,
                                        dropout_p=args.dropout, device=device)
@@ -135,7 +135,7 @@ def main():
         
         best_val_f1 = 0.0
 
-        for _ in trange(int(args.num_train_epochs), desc="Epoch"):
+        for _ in tqdm(range(args.num_train_epochs), desc="Epoch"):
             tr_loss = 0
             nb_tr_examples, nb_tr_steps = 0, 0
 
