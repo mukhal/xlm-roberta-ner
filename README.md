@@ -14,11 +14,10 @@ The code is inspired from the original BERT repo and the [BERT-NER](https://gith
 ## Setting up
 
 ```bash
-# clone the repo
-git clone https://github.com/mohammadKhalifa/XLMR-NER.git
-
 export PARAM_SET=base # change to large to use the large architecture
 
+# clone the repo
+git clone https://github.com/mohammadKhalifa/XLMR-NER.git
 cd XLMR-NER/
 mkdir pretrained_models 
 wget -P pretrained_models https://dl.fbaipublicfiles.com/fairseq/models/xlmr.$PARAM_SET.tar.gz
