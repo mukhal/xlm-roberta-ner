@@ -69722,23 +69722,24 @@ Apple B-ORG
 : O
 الجمعية B-ORG
 العامة I-ORG
-O
+، O
 مجلس B-ORG
 الأمن I-ORG
-O
+، O
 المجلس B-ORG
 الاقتصادي I-ORG
 والاجتماعي I-ORG
-O
+، O
 مجلس B-ORG
 الوصاية I-ORG
-O
+، O
 الأمانة B-ORG
 العامة I-ORG
-O
+، O
 محكمة B-ORG
 العدل I-ORG
 الدولية I-ORG
+. O
 ضربت O
 فيضانات O
 جديدة O
