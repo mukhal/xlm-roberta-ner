@@ -135,7 +135,6 @@ def main():
         val_data = create_dataset(val_features)
         
         best_val_f1 = 0.0
-        model.train()   
 
         for _ in trange(int(args.num_train_epochs), desc="Epoch"):
             tr_loss = 0
@@ -143,6 +142,7 @@ def main():
 
             tbar = tqdm(train_dataloader, desc="Iteration")
             
+            model.train()
             for step, batch in enumerate(tbar):
                 batch = tuple(t.to(device) for t in batch)
                 input_ids, label_ids, l_mask, valid_ids, = batch
@@ -202,7 +202,6 @@ def main():
         logger.info("  Batch size = %d", args.eval_batch_size)
         
         eval_data = create_dataset(eval_features)
-        
         f1_score, report = evaluate_model(model, eval_data, label_list, args.eval_batch_size, device)
 
        
