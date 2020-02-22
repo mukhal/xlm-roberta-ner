@@ -5,7 +5,7 @@ This repo implements finetuning the [https://arxiv.org/abs/1911.02116](XLM-Rober
 ## Requirments 
 * `python 3.6+`
 * `fairseq`
-* `pytorch_transformers`
+* `pytorch_transformers` (for `AdamW` and `WarmpUpScheduler`)
 
 
 
