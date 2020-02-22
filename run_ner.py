@@ -75,13 +75,12 @@ def main():
 
     hidden_size = 768 if 'base' in args.pretrained_path else 1024 # TODO: make this inside model.__init__
 
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model = XLMRForTokenClassification(pretrained_path=args.pretrained_path,
                                        n_labels=num_labels, hidden_size=hidden_size,
-                                       dropout_p=args.dropout)
+                                       dropout_p=args.dropout, device=device)
 
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model.to(device)
-
     no_decay = ['bias', 'final_layer_norm.weight']
     
     params = list(model.named_parameters())

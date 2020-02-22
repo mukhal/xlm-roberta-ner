@@ -66,17 +66,20 @@ class NerProcessor:
         sentence = []
         label = []
 
-        for line in f:
-            if len(line) == 0 or line.startswith('-DOCSTART') or line[0] == "\n" or line[0] == '.':
+        for i, line in enumerate(f, 1):
+            if not line.strip() or len(line) == 0 or line.startswith('-DOCSTART') or line[0] == "\n" or line[0] == '.':
                 if len(sentence) > 0:
                     data.append((sentence, label))
                     sentence = []
                     label = []
                 continue
 
-            splits = line.split(' ')
-            sentence.append(splits[0])
-            label.append(splits[-1][:-1])
+            splits = line.split()
+            assert len(splits) == 2, "error on line {}. Found {} splits".format(i, len(splits))
+            word, tag = splits[0], splits[1]
+            assert tag in ["O", "B-PERS", "I-PERS", "B-ORG", "I-ORG", "B-LOC", "I-LOC"], "tag error in line {}".format(i)
+            sentence.append(word.strip())
+            label.append(tag.strip())
 
         if len(sentence) > 0:
             data.append((sentence, label))

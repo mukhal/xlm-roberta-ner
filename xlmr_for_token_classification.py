@@ -6,7 +6,7 @@ import torch.nn as nn
 class XLMRForTokenClassification(nn.Module):
 
     def __init__(self, pretrained_path, n_labels, hidden_size=768, dropout_p=0.3, label_ignore_idx=0,
-                head_init_range=0.04):
+                head_init_range=0.04, device='cuda'):
         super().__init__()
 
         self.n_labels = n_labels
@@ -16,6 +16,8 @@ class XLMRForTokenClassification(nn.Module):
         self.xlmr = XLMRModel.from_pretrained(pretrained_path)
         self.model = self.xlmr.model
         self.dropout = nn.Dropout(dropout_p)
+        
+        self.device=device
 
         # initializing classification head
         self.classification_head.weight.data.normal_(mean=0.0, std=head_init_range)
@@ -38,7 +40,7 @@ class XLMRForTokenClassification(nn.Module):
         transformer_out, _ = self.model(inputs_ids, features_only=True)
 
         bsz, max_seq_len, hidden_size = transformer_out.size()
-        valid_output = torch.zeros(bsz, max_seq_len, hidden_size).to('cuda')
+        valid_output = torch.zeros(bsz, max_seq_len, hidden_size).to(self.device)
 
         for i in range(bsz):
             for j in range(max_seq_len):
