@@ -5,7 +5,7 @@ import torch.nn as nn
 
 class XLMRForTokenClassification(nn.Module):
 
-    def __init__(self, pretrained_path, n_labels, hidden_size=768, dropout_p=0.3, label_ignore_idx=0,
+    def __init__(self, pretrained_path, n_labels, hidden_size, dropout_p, label_ignore_idx=0,
                 head_init_range=0.04, device='cuda'):
         super().__init__()
 
@@ -47,13 +47,12 @@ class XLMRForTokenClassification(nn.Module):
                 if valid_mask[i][j]:
                     valid_output[i][j] = transformer_out[i][j]
 
-        valid_output = self.dropout(valid_output)
+        valid_output = self.dropout(transformer_out)
         logits = self.classification_head(valid_output)
 
         if labels is not None:
             loss_fct = nn.CrossEntropyLoss(ignore_index=self.label_ignore_idx)
             # Only keep active parts of the loss
-            #attention_mask_label = None
             if labels_mask is not None:
                 active_loss = valid_mask.view(-1) == 1
                 active_logits = logits.view(-1, self.n_labels)[active_loss]

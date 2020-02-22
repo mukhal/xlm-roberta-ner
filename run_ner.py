@@ -1,6 +1,5 @@
 from __future__ import absolute_import, division, print_function
 
-from data_utils import *
 import argparse
 import csv
 import json
@@ -23,9 +22,9 @@ from tqdm import tqdm_notebook as tqdm
 from tqdm import trange
 
 from seqeval.metrics import classification_report
-from xlmr_for_token_classification import XLMRForTokenClassification
-from data_utils import *
+from model.xlmr_for_token_classification import XLMRForTokenClassification
 from utils import add_xlmr_args, evaluate_model
+from data_utils import NerProcessor, create_dataset, convert_examples_to_features
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -71,9 +70,9 @@ def main():
         train_examples = processor.get_train_examples(args.data_dir)
         num_train_optimization_steps = int(
             len(train_examples) / args.train_batch_size / args.gradient_accumulation_steps) * args.num_train_epochs
+    
     # Prepare model
-
-    hidden_size = 768 if 'base' in args.pretrained_path else 1024 # TODO: make this inside model.__init__
+    hidden_size = 768 if 'base' in args.pretrained_path else 1024 # TODO: move this inside model.__init__
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model = XLMRForTokenClassification(pretrained_path=args.pretrained_path,
@@ -175,15 +174,15 @@ def main():
             f1, report = evaluate_model(model, val_data, label_list, args.eval_batch_size, device)
             if f1 > best_val_f1:
                 best_val_f1 = f1
-                logging.info("Found better f1=%.4f on validation set. Saving model\n" %(f1))
-                logging.info("%s\n" %(report))
+                logger.info("Found better f1=%.4f on validation set. Saving model\n" %(f1))
+                logger.info("%s\n" %(report))
                 
                 torch.save(model.state_dict(), open(os.path.join(args.output_dir, 'model.pt'), 'wb'))
             
     else: # load a saved model
         state_dict = torch.load(open(os.path.join(args.output_dir, 'model.pt'), 'rb'))
         model.load_state_dict(state_dict)
-        logging.info("Loaded saved model")
+        logger.info("Loaded saved model")
 
     model.to(device)
 
@@ -208,8 +207,9 @@ def main():
         logger.info("\n%s", report)
         output_eval_file = os.path.join(args.output_dir, "eval_results.txt")
         with open(output_eval_file, "w") as writer:
-            logger.info("***** Eval results *****")
+            logger.info("***** Writing results to file *****")
             writer.write(report)
+            logger.info("Done.")
 
 
 if __name__ == "__main__":
