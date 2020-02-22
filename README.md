@@ -23,6 +23,25 @@ mkdir pretrained_models
 wget -P pretrained_models https://dl.fbaipublicfiles.com/fairseq/models/xlmr.$PARAM_SET.tar.gz
 tar xzvf pretrained_models/xlmr.$PARAM_SET.tar.gz  --directory pretrained_models/
 
+```
+
+## Training and evaluating
+The code expects the data directory passed to contain 3 dataset splits: `train.txt`, `valid.txt` and `test.txt`. The code directory 
 
 ```
+python run_ner.py --data_dir=data/conll2003/ \ 
+  --task_name=ner \
+  --output_dir=model_dir/ \
+  --max_seq_length=16 \
+  --num_train_epochs 1 \
+  --do_eval \
+  --warmup_proportion=0.1 \
+  --pretrained_path pretrained_models/xlmr.$PARAM_SET/  \
+  --learning_rate 0.00007 \
+  --do_train \
+  --eval_on test \
+  --train_batch_size 4
+
+```
+
 
