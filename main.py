@@ -179,6 +179,8 @@ def main():
                 
                 torch.save(model.state_dict(), open(os.path.join(args.output_dir, 'model.pt'), 'wb'))
             
+            else :
+                logger.info("Found no better F1 score: {}\n".format(f1))
     else: # load a saved model
         state_dict = torch.load(open(os.path.join(args.output_dir, 'model.pt'), 'rb'))
         model.load_state_dict(state_dict)

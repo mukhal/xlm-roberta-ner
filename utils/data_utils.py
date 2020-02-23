@@ -193,7 +193,7 @@ def convert_examples_to_features(examples, label_list, max_seq_length, encode_me
             logging.info("*** Example ***")
             logging.info("guid: %s" % (example.guid))
             logging.info("tokens: %s" % " ".join(
-                [str(x) for x in tokens]))
+                [str(x) for x in token_ids]))
             logging.info("input_ids: %s" %
                          " ".join([str(x) for x in token_ids]))
             logging.info("input_mask: %s" %
