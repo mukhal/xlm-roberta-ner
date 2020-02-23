@@ -55,7 +55,7 @@ class NerProcessor:
             self._read_file(os.path.join(data_dir, "test.txt")), "test")
 
     def get_labels(self):
-        return ["O", "B-PER", "I-PER", "B-ORG", "I-ORG", "B-LOC", "I-LOC"]
+        return ["O", "B-PER", "I-PER", "B-ORG", "I-ORG", "B-LOC", "I-LOC", "B-MISC", "I-MISC"]
 
     def _read_file(self, filename):
         '''
@@ -77,7 +77,7 @@ class NerProcessor:
             splits = line.split()
             assert len(splits) >= 2, "error on line {}. Found {} splits".format(i, len(splits))
             word, tag = splits[0], splits[-1]
-            assert tag in self.get_labels(), "tag {} error in line {}".format(tag, i)
+            assert tag in self.get_labels(), "unknown tag {} in line {}".format(tag, i)
             sentence.append(word.strip())
             label.append(tag.strip())
 
