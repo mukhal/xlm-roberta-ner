@@ -148,7 +148,7 @@ def main():
             tr_loss = 0
             nb_tr_examples, nb_tr_steps = 0, 0
 
-            tbar = tqdm(train_dataloader, desc="Iteration")
+            tbar = tqdm(train_dataloader, desc="Iteration", mininterval=60)
             
             model.train()
             for step, batch in enumerate(tbar):
