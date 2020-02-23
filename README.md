@@ -31,7 +31,7 @@ The code expects the data directory passed to contain 3 dataset splits: `train.t
 ```
 
 python main.py 
-      --data_dir=data/conll2003/  \
+      --data_dir=data/coNLL-2003/  \
       --task_name=ner   \
       --output_dir=model_dir/   \
       --max_seq_length=16   \
@@ -50,4 +50,11 @@ By default, the best model on the validation set is saved to `args.output_dir`. 
 
 ## Results
 
+### CoNLL-2003
+
+| Model | Dev F1 | Test F1  |
+|---|---|---|
+| XLMR-Base |    |   |
+| XLMR-Large  |   |   |
+| XLMR-Large (Frozen) | | |
 
