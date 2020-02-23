@@ -21,7 +21,7 @@ from model.xlmr_for_token_classification import XLMRForTokenClassification
 from utils.train_utils import add_xlmr_args, evaluate_model
 from utils.data_utils import NerProcessor, create_dataset, convert_examples_to_features
 
-from tqdm import tqdm as tqdm
+from tqdm import tqdm_notebook as tqdm
 from tqdm import trange
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
@@ -148,7 +148,7 @@ def main():
             tr_loss = 0
             nb_tr_examples, nb_tr_steps = 0, 0
 
-            tbar = tqdm(train_dataloader, desc="Iteration", mininterval=60)
+            tbar = tqdm(train_dataloader, desc="Iteration")
             
             model.train()
             for step, batch in enumerate(tbar):
