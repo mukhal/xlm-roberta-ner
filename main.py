@@ -101,8 +101,8 @@ def main():
     # freeze model if necessary
     if args.freeze_model:
         logger.info("Freezing XLM-R model...")
-        for p in model.parameters():
-            if p.requires_grad:
+        for n, p in model.named_parameters():
+            if 'xlmr' in n and p.requires_grad:
                 p.requires_grad = False
 
 
