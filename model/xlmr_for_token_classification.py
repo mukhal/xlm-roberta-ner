@@ -52,8 +52,9 @@ class XLMRForTokenClassification(nn.Module):
 
         valid_output = self.dropout(valid_output)
 
-        logits = F.relu(self.linear_1(valid_output))
-        logits = self.classification_head(logits)
+        out_1 = F.relu(self.linear_1(valid_output))
+        out_1 = self.dropout(out_1)
+        logits = self.classification_head(out_1)
 
         if labels is not None:
             loss_fct = nn.CrossEntropyLoss(ignore_index=self.label_ignore_idx)
