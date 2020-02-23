@@ -130,7 +130,7 @@ def evaluate_model(model, eval_dataset, label_list, batch_size, device):
 
      label_map = {i: label for i, label in enumerate(label_list, 1)}
 
-     for input_ids, label_ids, l_mask, valid_ids in tqdm(eval_dataloader, desc="Evaluating"):
+     for input_ids, label_ids, l_mask, valid_ids in eval_dataloader:
 
           input_ids = input_ids.to(device)
           label_ids = label_ids.to(device)

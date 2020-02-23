@@ -148,7 +148,7 @@ def main():
             tr_loss = 0
             nb_tr_examples, nb_tr_steps = 0, 0
 
-            tbar = tqdm(train_dataloader, desc="Iteration")
+            tbar = tqdm(train_dataloader, desc="Iteration", miniters=10)
             
             model.train()
             for step, batch in enumerate(tbar):
@@ -180,6 +180,7 @@ def main():
                     model.zero_grad()
                     global_step += 1
             
+            logger.info("Testing on validation set...")
             f1, report = evaluate_model(model, val_data, label_list, args.eval_batch_size, device)
             if f1 > best_val_f1:
                 best_val_f1 = f1
