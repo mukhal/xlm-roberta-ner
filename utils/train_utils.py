@@ -102,6 +102,10 @@ def add_xlmr_args(parser):
      parser.add_argument('--dropout', 
                          type=float, default=0.3,
                          help = "training dropout probability")
+     
+     parser.add_argument('--freeze_model', 
+                         action='store_true', default=False,
+                         help = "whether to freeze the XLM-R base model and train only the classification heads")
                                    
      return parser
 

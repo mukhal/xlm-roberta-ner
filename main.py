@@ -81,6 +81,7 @@ def main():
 
     model.to(device)
     no_decay = ['bias', 'final_layer_norm.weight']
+
     
     params = list(model.named_parameters())
 
@@ -96,6 +97,14 @@ def main():
                       lr=args.learning_rate, eps=args.adam_epsilon)
     scheduler = WarmupLinearSchedule(
         optimizer, warmup_steps=warmup_steps, t_total=num_train_optimization_steps)
+
+    # freeze model if necessary
+    if args.freeze_model:
+        logger.info("Freezing XLM-R model...")
+        for p in model.parameters():
+            if p.requires_grad:
+                p.requires_grad = False
+
 
     if args.fp16:
         try:
