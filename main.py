@@ -180,17 +180,17 @@ def main():
                     model.zero_grad()
                     global_step += 1
             
-            logger.info("Testing on validation set...")
+            logger.info("\nTesting on validation set...")
             f1, report = evaluate_model(model, val_data, label_list, args.eval_batch_size, device)
             if f1 > best_val_f1:
                 best_val_f1 = f1
-                logger.info("Found better f1=%.4f on validation set. Saving model\n" %(f1))
+                logger.info("\nFound better f1=%.4f on validation set. Saving model\n" %(f1))
                 logger.info("%s\n" %(report))
                 
                 torch.save(model.state_dict(), open(os.path.join(args.output_dir, 'model.pt'), 'wb'))
             
             else :
-                logger.info("Found no better F1 score: {}\n".format(f1))
+                logger.info("\nNo better F1 score: {}\n".format(f1))
     else: # load a saved model
         state_dict = torch.load(open(os.path.join(args.output_dir, 'model.pt'), 'rb'))
         model.load_state_dict(state_dict)
