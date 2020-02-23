@@ -51,10 +51,21 @@ By default, the best model on the validation set is saved to `args.output_dir`. 
 ## Results
 
 ### CoNLL-2003
+The below models were trained with the following settings:
+
+```
+--max_seq_length=128
+--num_train_epochs 10
+--warmup_proportion=0.0 
+--learning_rate 3e-5  
+--gradient_accumulation_steps 4 
+--dropout 0.2 
+--train_batch_size 32
+```
 
 | Model | Dev F1 | Test F1  |
 |---|---|---|
 | XLMR-Base |    |   |
-| XLMR-Large  |   |   |
+| XLMR-Large  | 94.98  |   |
 | XLMR-Large (Frozen) | | |
 
