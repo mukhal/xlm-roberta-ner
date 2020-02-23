@@ -1,5 +1,5 @@
-# XLMR-NER
-This repo implements finetuning the [XLM-Roberta](https://arxiv.org/abs/1911.02116) Cross-lingual architecture for Sequence Tagging, namely Named Entity Recognition. 
+# XLM-Roberta NER
+This repo implements finetuning the [XLM-Roberta](https://arxiv.org/abs/1911.02116) cross-lingual architecture for Sequence Tagging, namely Named Entity Recognition. 
 
 The code is inspired from the original BERT repo and the [BERT-NER](https://github.com/kamalkraj/BERT-NER) repo by kamalkraj.
 
