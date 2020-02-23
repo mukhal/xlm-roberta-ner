@@ -63,6 +63,6 @@ The below models were trained with the following settings:
 | Model | Dev F1 | Test F1  |
 |---|---|---|
 | XLMR-Base |    |   |
-| XLMR-Large  | 95.29  |   |
+| XLMR-Large  | 95.29  |  91.14 |
 | XLMR-Large (Frozen) | | |
 
