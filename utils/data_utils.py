@@ -55,7 +55,7 @@ class NerProcessor:
             self._read_file(os.path.join(data_dir, "test.txt")), "test")
 
     def get_labels(self):
-        return ["O", "B-PERS", "I-PERS", "B-ORG", "I-ORG", "B-LOC", "I-LOC"]
+        return ["O", "B-PER", "I-PER", "B-ORG", "I-ORG", "B-LOC", "I-LOC"]
 
     def _read_file(self, filename):
         '''
