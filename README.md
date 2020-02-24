@@ -46,7 +46,7 @@ python main.py
 By default, the best model on the validation set is saved to `args.output_dir`. This model is then loaded and tested on the test set, if `--do_eval` and `--eval_on test`.
 
 ## Results
-### CoNLL-2003
+* **CoNLL-2003**
 I tried to reproduce the results in the paper by training the models using the following settings:
 
 ```
@@ -67,5 +67,3 @@ I got the following F1 scores:
 
 *The above results are close to those reported in the paper but a bit worse, probably due to the difference in experimental settings.*
 
-### CoNLL-2002 
-TODO
