@@ -44,6 +44,7 @@ python main.py
       --train_batch_size 4
       -- dropout 0.2
 ```
+If you want to use the XLM-R model's outputs as features without finetuning, Use the `--freeze_model` argument.
 
 By default, the best model on the validation set is saved to `args.output_dir`. This model is then loaded and tested on the test set, if `--do_eval` and `--eval_on test`.
 
