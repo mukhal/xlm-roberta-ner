@@ -42,6 +42,7 @@ python main.py
       --do_train \
       --eval_on test \
       --train_batch_size 4
+      -- dropout 0.2
 ```
 
 By default, the best model on the validation set is saved to `args.output_dir`. This model is then loaded and tested on the test set, if `--do_eval` and `--eval_on test`.
