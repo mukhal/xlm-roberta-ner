@@ -22,6 +22,7 @@ cd XLMR-NER/
 mkdir pretrained_models 
 wget -P pretrained_models https://dl.fbaipublicfiles.com/fairseq/models/xlmr.$PARAM_SET.tar.gz
 tar xzvf pretrained_models/xlmr.$PARAM_SET.tar.gz  --directory pretrained_models/
+rm -r pretrained_models/xlmr.$PARAM_SET.tar.gz
 ```
 
 ## Training and evaluating
@@ -46,7 +47,7 @@ python main.py
 By default, the best model on the validation set is saved to `args.output_dir`. This model is then loaded and tested on the test set, if `--do_eval` and `--eval_on test`.
 
 ## Results
-* **CoNLL-2003**
+### CoNLL-2003
 I tried to reproduce the results in the paper by training the models using the following settings:
 
 ```
