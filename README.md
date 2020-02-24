@@ -58,6 +58,7 @@ I tried to reproduce the results in the paper by training the models using the f
 --dropout 0.2 
 --train_batch_size 32
 ```
+I got the following F1 scores:
 
 | Model | Dev F1 | Test F1  |
 |---|---|---|
@@ -66,3 +67,5 @@ I tried to reproduce the results in the paper by training the models using the f
 
 *The above results are close to those reported in the paper but a bit worse, probably due to the difference in experimental settings.*
 
+### CoNLL-2002 
+TODO
