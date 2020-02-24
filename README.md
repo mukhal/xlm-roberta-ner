@@ -46,15 +46,14 @@ python main.py
 By default, the best model on the validation set is saved to `args.output_dir`. This model is then loaded and tested on the test set, if `--do_eval` and `--eval_on test`.
 
 ## Results
-
 ### CoNLL-2003
-The below models were trained with the following settings:
+I tried to reproduce the results in the paper by training the models using the following settings:
 
 ```
 --max_seq_length=128
 --num_train_epochs 10
 --warmup_proportion=0.0 
---learning_rate 3e-5  
+--learning_rate 6e-5  
 --gradient_accumulation_steps 4 
 --dropout 0.2 
 --train_batch_size 32
@@ -62,7 +61,8 @@ The below models were trained with the following settings:
 
 | Model | Dev F1 | Test F1  |
 |---|---|---|
-| XLMR-Base |    |   |
-| XLMR-Large  | 95.29  |  91.14 |
-| XLMR-Large (Frozen) | | |
+| XLMR-Base |   95.29 | 91.14  |
+| XLMR-Large  | 96.14  |  91.81 |
+
+*The above results are close to those reported in the paper but a bit worse, probably due to the difference in experimental settings.*
 
