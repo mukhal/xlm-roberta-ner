@@ -31,9 +31,8 @@ class XLMRForTokenClassification(nn.Module):
         Args:
             inputs_ids: tensor of size (bsz, max_seq_len). padding idx = 1
             labels: tensor of size (bsz, max_seq_len)
-            labels_mask and valid_mask: indicate where loss gradients should be propagated and where
+            labels_mask and valid_mask: indicate where loss gradients should be propagated and where 
             labels should be ignored
-
 
         Returns :
             logits: unnormalized model outputs.
@@ -42,17 +41,7 @@ class XLMRForTokenClassification(nn.Module):
         '''
         transformer_out, _ = self.model(inputs_ids, features_only=True)
 
-        bsz, max_seq_len, hidden_size = transformer_out.size()
-        valid_output = torch.zeros(bsz, max_seq_len, hidden_size).to(self.device)
-
-        for i in range(bsz):
-            for j in range(max_seq_len):
-                if valid_mask[i][j]:
-                    valid_output[i][j] = transformer_out[i][j]
-
-        valid_output = self.dropout(valid_output)
-
-        out_1 = F.relu(self.linear_1(valid_output))
+        out_1 = F.relu(self.linear_1(transformer_out))
         out_1 = self.dropout(out_1)
         logits = self.classification_head(out_1)
 
