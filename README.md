@@ -18,7 +18,7 @@ export PARAM_SET=base # change to large to use the large architecture
 
 # clone the repo
 git clone https://github.com/mohammadKhalifa/xlm-roberta-ner.git
-cd XLMR-NER/
+cd xlm-roberta-ner/
 mkdir pretrained_models 
 wget -P pretrained_models https://dl.fbaipublicfiles.com/fairseq/models/xlmr.$PARAM_SET.tar.gz
 tar xzvf pretrained_models/xlmr.$PARAM_SET.tar.gz  --directory pretrained_models/
